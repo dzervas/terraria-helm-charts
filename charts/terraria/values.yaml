@@ -302,7 +302,7 @@ image:
   terraria:
     # The image type: tshock, vanilla, null to derive from image tag
     type: null
-    repository: cybermaxke/terraria
+    repository: ghcr.io/dzervas/terraria
     tag: tshock-{{ .Chart.AppVersion }}
     # The pull policy, image.pullPolicy is used if not set
     pullPolicy: null

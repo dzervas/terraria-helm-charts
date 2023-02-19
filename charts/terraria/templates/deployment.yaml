@@ -92,7 +92,7 @@ spec:
           {{- /* Stdin must be set to true, or the container will crash after generating the world */}}
           stdin: true
           args:
-            - -config serverconfig.txt
+            - -config /terraria-server/serverconfig.txt
             - -announcementboxrange '{{ default -1 .Values.announcementBox.range }}'
             {{- if not .Values.announcementBox.enabled }}
             - -disableannouncementbox
@@ -112,13 +112,13 @@ spec:
               mountPath: /terraria-server/serverconfig.txt
               subPath: serverconfig.txt
             - name: worlds
-              mountPath: /home/terraria/server/worlds
+              mountPath: /data/worlds
             - name: plugins
-              mountPath: /home/terraria/server/plugins
+              mountPath: /data/plugins
             - name: logs
-              mountPath: /home/terraria/server/logs
+              mountPath: /data/logs
             - name: config
-              mountPath: /home/terraria/server/config
+              mountPath: /data/config
           ports:
             - containerPort: 7777
               name: server
