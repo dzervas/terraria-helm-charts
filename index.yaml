@@ -3,7 +3,18 @@ entries:
   terraria:
   - apiVersion: v2
     appVersion: 1.4.4.9
-    created: "2023-02-19T20:48:13.522734741+02:00"
+    created: "2023-02-19T21:04:57.327861147+02:00"
+    description: A Helm chart for Terraria
+    digest: 990bfa3c761fcc485df131921c8c95c83e043bd86d71ade1bfba7108f75bbc10
+    icon: https://terraria.org/static/media/logo.734118ae.png
+    name: terraria
+    type: application
+    urls:
+    - https://dzervas.github.io/terraria-helm-charts/terraria-0.2.1.tgz
+    version: 0.2.1
+  - apiVersion: v2
+    appVersion: 1.4.4.9
+    created: "2023-02-19T21:04:57.326785002+02:00"
     description: A Helm chart for Terraria
     digest: 78ff9a4461ca467bd9716f1865443ea654ef9defbcc6b54be6f3b8ccb40cb02d
     icon: https://terraria.org/static/media/logo.734118ae.png
@@ -12,4 +23,4 @@ entries:
     urls:
     - https://dzervas.github.io/terraria-helm-charts/terraria-0.2.0.tgz
     version: 0.2.0
-generated: "2023-02-19T20:48:13.521496251+02:00"
+generated: "2023-02-19T21:04:57.325516756+02:00"
