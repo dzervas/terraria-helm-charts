@@ -5,17 +5,18 @@
 args=$(echo "$@")
 echo "Running server with command flags: $args"
 
-# Workaround worldpath being ignored and not defaulting to /home/terraria/server/worlds
+# Workaround worldpath being ignored and not defaulting to /data/worlds
 
+mkdir -p /tmp/terraria
 config=$(echo "$args" | pcregrep -o2 '(^|\s)(-config\s+[^\s]+)')
 # Copy the config so we can modify it
 if [ -n "$config" ]; then
   args=$(echo "$args" | sed "s@$config@@g")
   config=$(echo "$config" | pcregrep -o1 '\s+([^\s]+)$')
-  cp "$config" "/terraria-server/tmp/serverconfig.txt"
+  cp "$config" "/tmp/terraria/serverconfig.txt"
 fi
 
-config="/terraria-server/tmp/serverconfig.txt"
+config="/tmp/terraria/serverconfig.txt"
 touch "$config"
 
 # Extract world arg
@@ -30,7 +31,7 @@ if [ -z "$world" ] && [ -n "$config" ]; then
   echo "Check config world"
   world=$(cat "$config" | pcregrep -o1 '^(\s*world\s*=\s*[^\s]+)')
   if [ -n "$world" ]; then
-	  sed -i "s@$world@@g" "$config"
+    sed -i "s@$world@@g" "$config"
     world=$(echo "$world" | pcregrep -o1 '=\s*([^\s]+)')
   fi
 fi
@@ -49,7 +50,7 @@ fi
 # Default world directory
 if [ -z "$worldpath" ]; then
   echo "Fallback to default worldpath"
-  worldpath="/home/terraria/server/worlds"
+  worldpath="/data/worlds"
 fi
 
 # World directory doesn't end with / so add it
@@ -59,7 +60,7 @@ fi
 
 # World directory doesn't start with / so put it relative to the workdir
 if [ -z "$(echo "$worldpath" | pcregrep '/$')" ]; then
-  worldpath="/home/terraria/server/$worldpath"
+  worldpath="/data/$worldpath"
 fi
 
 if [ -n "$world" ]; then
@@ -73,6 +74,12 @@ fi
 
 echo "worldpath=$worldpath" >> "$config"
 args="$args -config $config"
+
+# Fix the 'Your mono runtime and class libraries are out of sync.' error
+rm /terraria-server/System*
+rm /terraria-server/Mono*
+rm /terraria-server/monoconfig
+rm /terraria-server/mscorlib.dll
 
 # shellcheck disable=SC2086
 mono --server --gc=sgen -O=all /terraria-server/TerrariaServer.exe $args

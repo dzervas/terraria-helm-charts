@@ -1,5 +1,6 @@
 #  The MIT License (MIT)
 #
+#  Copyright (c) Dimitris Zervas <https://dzervas.gr>
 #  Copyright (c) Seppe Volkaerts <https://seppevolkaerts.be>
 #  Copyright (c) 2015 Ryan Sheehan
 #
@@ -21,51 +22,33 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
-FROM alpine:3.14.2 AS base
-
-RUN apk add --update-cache unzip
-
-ENV DL_VERSION=1423
-ENV DL_FILE=terraria-server-$DL_VERSION.zip
-ENV DL_LINK=https://terraria.org/api/download/pc-dedicated-server/$DL_FILE
-
-# Download and unpack
-ADD $DL_LINK /$DL_FILE
-RUN unzip /$DL_FILE -d /terraria && \
-  mkdir /terraria-server && \
-  mv /terraria/$DL_VERSION/Linux/* /terraria-server && \
-  chmod +x /terraria-server/TerrariaServer.exe && \
-  chmod +x /terraria-server/TerrariaServer.bin.x86_64
-
-FROM mono:6.8.0.96-slim
-
+FROM mono:6-slim
 LABEL maintainer="Seppe Volkaerts <contact@seppevolkaerts.be>"
 
-EXPOSE 7777
+ENV PUID=1000
+ENV PGID=1000
 
-COPY --from=base /terraria-server /terraria-server
-COPY bootstrap.sh /terraria-server
+RUN mkdir -p /data/worlds /data/logs /data/config && \
+  chown -R ${PUID}:${PGID} /data
 
-RUN groupadd terraria -g 1000 && \
-  useradd terraria -m -u 1000 -g 1000 && \
-  apt-get update -y && \
-  apt-get install -y pcregrep && \
-  rm -rf /var/lib/apt/lists* /tmp* && \
-  mkdir /terraria-server/tmp && \
-  chown terraria:terraria /terraria-server/tmp
+WORKDIR /data
 
-WORKDIR /home/terraria/server
+RUN apt-get update -y && \
+  apt-get install -y pcregrep unzip && \
+  rm -rf /var/lib/apt/lists* /tmp/*
 
-RUN chown -R terraria:terraria .
+COPY entrypoint.sh /entrypoint.sh
 
-USER terraria
+ARG VERSION=1449
+ADD https://terraria.org/api/download/pc-dedicated-server/terraria-server-${VERSION}.zip /server.zip
 
-VOLUME [ "/home/terraria/server/worlds"  ]
-VOLUME [ "/home/terraria/server/logs"    ]
-VOLUME [ "/home/terraria/server/config"  ]
+RUN unzip /server -d /terraria && \
+  mkdir /terraria-server && \
+  mv /terraria/${VERSION}/Linux/* /terraria-server && \
+  rm -rf /server.zip /terraria /terraria-server/System* /terraria-server/Mono* /terraria-server/monoconfig /terraria-server/mscorlib.dll
 
-RUN mkdir worlds && \
-  mkdir logs && \
-  mkdir config
+USER ${PUID}:${PGID}
 
-ENTRYPOINT [ "/bin/sh", "/terraria-server/bootstrap.sh" ]
+VOLUME [ "/data/worlds", "/data/logs", "/data/config" ]
+EXPOSE 7777/tcp
+ENTRYPOINT [ "/entrypoint.sh" ]

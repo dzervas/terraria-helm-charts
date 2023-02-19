@@ -1,3 +1,3 @@
-FROM alpine:3.14.2
+FROM alpine:latest
 
 RUN apk add --update-cache unzip curl socat
