@@ -1,0 +1,54 @@
+---
+
+name: bump
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: choice
+        description: "New version bump"
+        required: true
+        options:
+          - major
+          - minor
+          - patch
+        default: patch
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.PACKAGES_PAT }}
+          fetch-depth: 0
+
+      - name: Find last version from tag
+        run: echo "LAST_VERSION=$(git describe --tags --abbrev=0 | tail -c +2 || exit 1)" >> $GITHUB_ENV
+      - name: Find new version
+        run: echo "NEW_VERSION=$(.github/semver-increment.sh ${{ env.LAST_VERSION }} ${{ github.event.inputs.version }} || exit 1)" >> $GITHUB_ENV
+
+      - name: Bump Cargo.toml version
+        run: 'sed -Ei "s/(^version ?= ?)\"${{ env.LAST_VERSION }}\"/\1\"${{ env.NEW_VERSION }}\"/" Cargo.toml'
+      - name: Bump package.json version
+        run: 'sed -Ei "s/(^\s+\"version\" ?: ?)\"${{ env.LAST_VERSION }}\"/\1\"${{ env.NEW_VERSION }}\"/" den/package.json'
+      - name: Bump blogaki Chart.yaml appVersion
+        run: 'sed -Ei "s/(^appVersion: ?)${{ env.LAST_VERSION }}/\1${{ env.NEW_VERSION }}/" chart/blogaki/Chart.yaml'
+      - name: Bump blogaki Chart.yaml version
+        run: 'sed -Ei "s/(^version: ?)${{ env.LAST_VERSION }}/\1${{ env.NEW_VERSION }}/" chart/blogaki/Chart.yaml'
+      - name: Bump den Chart.yaml appVersion
+        run: 'sed -Ei "s/(^appVersion: ?)${{ env.LAST_VERSION }}/\1${{ env.NEW_VERSION }}/" chart/den/Chart.yaml'
+      - name: Bump den Chart.yaml version
+        run: 'sed -Ei "s/(^version: ?)${{ env.LAST_VERSION }}/\1${{ env.NEW_VERSION }}/" chart/den/Chart.yaml'
+      - name: Bump blogs Chart.yaml appVersion
+        run: 'sed -Ei "s/(^appVersion: ?)${{ env.LAST_VERSION }}/\1${{ env.NEW_VERSION }}/" chart/blogs/Chart.yaml'
+      - name: Bump blogs Chart.yaml version
+        run: 'sed -Ei "s/(^version: ?)${{ env.LAST_VERSION }}/\1${{ env.NEW_VERSION }}/" chart/blogs/Chart.yaml'
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: main
+          commit_message: Bump version to ${{ env.NEW_VERSION }}
+          tagging_message: "v${{ env.NEW_VERSION }}"
