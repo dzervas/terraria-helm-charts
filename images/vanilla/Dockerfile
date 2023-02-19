@@ -45,7 +45,10 @@ ADD https://terraria.org/api/download/pc-dedicated-server/terraria-server-${VERS
 RUN unzip /server -d /terraria && \
   mkdir /terraria-server && \
   mv /terraria/${VERSION}/Linux/* /terraria-server && \
-  rm -rf /server.zip /terraria /terraria-server/System* /terraria-server/Mono* /terraria-server/monoconfig /terraria-server/mscorlib.dll
+  rm -rf /server.zip /terraria
+
+# Fix the 'Your mono runtime and class libraries are out of sync.' error
+RUN rm /terraria-server/System* /terraria-server/Mono* /terraria-server/monoconfig /terraria-server/mscorlib.dll
 
 USER ${PUID}:${PGID}
 

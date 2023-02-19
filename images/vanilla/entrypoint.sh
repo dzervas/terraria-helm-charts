@@ -75,11 +75,5 @@ fi
 echo "worldpath=$worldpath" >> "$config"
 args="$args -config $config"
 
-# Fix the 'Your mono runtime and class libraries are out of sync.' error
-rm /terraria-server/System*
-rm /terraria-server/Mono*
-rm /terraria-server/monoconfig
-rm /terraria-server/mscorlib.dll
-
 # shellcheck disable=SC2086
 mono --server --gc=sgen -O=all /terraria-server/TerrariaServer.exe $args

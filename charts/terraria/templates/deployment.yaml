@@ -109,7 +109,7 @@ spec:
             {{- end }}
           volumeMounts:
             - name: server-config
-              mountPath: /home/terraria/server/serverconfig.txt
+              mountPath: /terraria-server/serverconfig.txt
               subPath: serverconfig.txt
             - name: worlds
               mountPath: /home/terraria/server/worlds
