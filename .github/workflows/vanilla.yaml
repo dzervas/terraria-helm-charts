@@ -75,10 +75,20 @@ jobs:
         if: steps.current_version.outputs.digest != steps.new_version.outputs.digest
         uses: azure/setup-helm@v3
 
+      - name: Get current versions
+        id: current_version
+        run: |
+          echo "VERSION=$(grep 'version: ' charts/vanilla/Chart.yaml | grep -o '[0-9.-]\+')" >> $GITHUB_ENV
+          echo "APPVERSION=$(grep 'appVersion: ' charts/vanilla/Chart.yaml | grep -o '[0-9.-]\+')" >> $GITHUB_ENV
+
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - uses: actions-ecosystem/action-push-tag@v1
+        with:
+          tag: v${{ env.APPVERSION }}-${{ env.VERSION }}
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.5.0
@@ -86,4 +96,4 @@ jobs:
           charts_dir: charts
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          CR_RELEASE_NAME_TEMPLATE: "Terraria Server v{{ .Version }} chart v{{ .AppVersion }}"
+          CR_RELEASE_NAME_TEMPLATE: "Terraria Server v{{ .AppVersion }} chart v{{ .Version }}"

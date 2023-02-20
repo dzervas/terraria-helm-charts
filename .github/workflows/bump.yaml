@@ -1,6 +1,6 @@
 ---
 
-name: bump
+name: Bump
 on:
   schedule:
     - cron: '30 3 * * 1'

@@ -141,7 +141,7 @@ image:
   terraria:
     type: null
     repository: ghcr.io/dzervas/terraria
-    tag: {{ .Chart.AppVersion }}
+    tag: "{{ .Chart.AppVersion }}"
     # The pull policy, image.pullPolicy is used if not set
     pullPolicy: null
 
