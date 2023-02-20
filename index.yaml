@@ -26,6 +26,17 @@ entries:
   vanilla:
   - apiVersion: v2
     appVersion: 1.4.4.9
+    created: "2023-02-20T16:08:52.86062256Z"
+    description: A Helm chart for Terraria
+    digest: d64669e55babf63110b357680753dba971816c0628fc151aa1484ebcc4c8a438
+    icon: https://terraria.org/static/media/logo.734118ae.png
+    name: vanilla
+    type: application
+    urls:
+    - https://github.com/dzervas/terraria-helm-charts/releases/download/1.1.9/vanilla-1.1.9.tgz
+    version: 1.1.9
+  - apiVersion: v2
+    appVersion: 1.4.4.9
     created: "2023-02-20T16:05:17.809191966Z"
     description: A Helm chart for Terraria
     digest: 9f835bb2cb9c531dc05fe4fede8437f32306904d20bba9fcb9bf384256ac4533
@@ -46,4 +57,4 @@ entries:
     urls:
     - https://github.com/dzervas/terraria-helm-charts/releases/download/1.1.7/vanilla-1.1.7.tgz
     version: 1.1.7
-generated: "2023-02-20T16:05:17.809212366Z"
+generated: "2023-02-20T16:08:52.86064266Z"
