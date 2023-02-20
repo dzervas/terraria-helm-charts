@@ -93,7 +93,7 @@ jobs:
 
       - name: Push new tag
         run: |
-          git tag -a "v${{ env.APPVERSION }}-${{ env.VERSION }}"
+          git tag -a "v${{ env.APPVERSION }}-${{ env.VERSION }}" -m "Bump Terraria Server v{{ .AppVersion }} chart v{{ .Version }}"
           git push origin "v${{ env.APPVERSION }}-${{ env.VERSION }}"
 
       - name: Run chart-releaser
