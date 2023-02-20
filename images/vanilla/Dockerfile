@@ -28,27 +28,30 @@ LABEL maintainer="Seppe Volkaerts <contact@seppevolkaerts.be>"
 ENV PUID=1000
 ENV PGID=1000
 
-RUN mkdir -p /data/worlds /data/logs /data/config && \
-  chown -R ${PUID}:${PGID} /data
+# The servers relies heavily on the user's home directory
+RUN groupadd -g ${PGID} terraria && useradd -u ${PUID} -g ${PGID} -s /bin/false -m terraria && \
+  mkdir -p /data/worlds /data/logs /data/config && \
+  chown -R ${PUID}:${PGID} ${HOME} /data
 
 WORKDIR /data
 
 RUN apt-get update -y && \
-  apt-get install -y pcregrep unzip && \
+  apt-get install -y pcregrep unzip wget && \
   rm -rf /var/lib/apt/lists* /tmp/*
 
 COPY entrypoint.sh /entrypoint.sh
 
-ARG VERSION=1449
-ADD https://terraria.org/api/download/pc-dedicated-server/terraria-server-${VERSION}.zip /server.zip
+ARG VERSION=1.4.4.9
+RUN wget https://terraria.org/api/download/pc-dedicated-server/terraria-server-$(echo $VERSION | tr -d '.').zip -O /server.zip
 
 RUN unzip /server -d /terraria && \
   mkdir /terraria-server && \
-  mv /terraria/${VERSION}/Linux/* /terraria-server && \
+  mv /terraria/$(echo $VERSION | tr -d '.')/Linux/* /terraria-server && \
   rm -rf /server.zip /terraria
 
 # Fix the 'Your mono runtime and class libraries are out of sync.' error
-RUN rm /terraria-server/System* /terraria-server/Mono* /terraria-server/monoconfig /terraria-server/mscorlib.dll
+# RUN rm /terraria-server/System* /terraria-server/Mono* /terraria-server/monoconfig /terraria-server/mscorlib.dll
+RUN rm /terraria-server/System.dll
 
 USER ${PUID}:${PGID}
 
