@@ -40,12 +40,7 @@ data:
     {{- end }}
     {{- end }}
     difficulty={{ $difficulty }}
-    {{- if include "terraria.tshock" . }}
-    {{- /* tshock docs suggest to set max players in the terraria config 2 higher than the tshock config */}}
-    maxplayers={{ add .Values.server.maxPlayers.base 2 }}
-    {{- else }}
     maxplayers={{ .Values.server.maxPlayers.base }}
-    {{- end }}
     worldrollbackstokeep={{ .Values.world.rollbacksToKeep }}
     language={{ .Values.server.language }}
     {{- if .Values.password }}
@@ -56,61 +51,3 @@ data:
     {{- end }}
     slowliquids={{ int .Values.world.slowLiquids }}
     secure={{ int .Values.antiCheatProtection.enabled }}
-  {{- if include "terraria.tshock" . }}
-  config.json: |
-    {
-      "Settings": {
-        "ServerPassword": "{{ .Values.password }}",
-        "ServerPort": 7777,
-        "MaxSlots": {{ .Values.server.maxPlayers.base }},
-        "ReservedSlots": {{ .Values.server.maxPlayers.reserved }},
-        "ServerName": "{{ tpl .Values.server.name . }}",
-        "UseServerName": true,
-        "DebugLogs": {{ .Values.server.debugLoggingEnabled }},
-        "SpawnProtection": {{ .Values.spawnProtection.enabled }},
-        "SpawnProtectionRadius": {{ .Values.spawnProtection.radius }},
-        "RangeChecks": {{ and .Values.antiCheatProtection.enabled .Values.antiCheatProtection.rangeChecks }},
-        "HardcoreOnly": {{ .Values.hardcoreOnly }},
-        "MediumcoreOnly": {{ .Values.mediumcoreOnly }},
-        "DisableHardmode": {{ not .Values.hardmode.triggerable }},
-        "AllowCrimsonCreep": {{ .Values.hardmode.spreadCrimson }},
-        "AllowCorruptionCreep": {{ .Values.hardmode.spreadCorruption }},
-        "AllowHallowCreep": {{ .Values.hardmode.spreadHallow }},
-        {{- /* Backup and Save */}}
-        "AutoSave": {{ .Values.world.autoSave }},
-        "AnnounceSave": {{ .Values.world.announceSave }},
-        "ShowBackupAutosaveMessages": {{ .Values.world.backup.announceSave }},
-        "BackupInterval": {{ include "terraria.durationToMinutes" .Values.world.backup.interval }},
-        "BackupKeepFor": {{ include "terraria.durationToMinutes" .Values.world.backup.keepFor }},
-        "SaveWorldOnCrash": {{ .Values.world.saveOnCrash }},
-        "SaveWorldOnLastPlayerExit": {{ .Values.world.saveOnLastPlayerExit }},
-        {{- /* Chat */}}
-        "CommandSpecifier": "{{ .Values.chat.commandSpecifier }}",
-        "SilentCommandSpecifier": "{{ .Values.chat.silentCommandSpecifier }}",
-        "SuperAdminChatRGB": {{ include "terraria.rgbColor" .Values.chat.superAdmin.color }},
-        "SuperAdminChatPrefix": "{{ .Values.chat.superAdmin.prefix }}",
-        "SuperAdminChatSuffix": "{{ .Values.chat.superAdmin.suffix }}",
-        "EnableGeoIP": {{ .Values.chat.announceGeographicLocation }},
-        "BroadcastRGB": {{ include "terraria.rgbColor" .Values.chat.broadcastColor }},
-        {{- $chatFormat := .Values.chat.format }}
-        {{- $chatFormat = replace "${groupName}" "{0}" $chatFormat }}
-        {{- $chatFormat = replace "${groupPrefix}" "{1}" $chatFormat }}
-        {{- $chatFormat = replace "${playerName}" "{2}" $chatFormat }}
-        {{- $chatFormat = replace "${groupSuffix}" "{3}" $chatFormat }}
-        {{- $chatFormat = replace "${message}" "{4}" $chatFormat }}
-        "ChatFormat": "{{ $chatFormat }}",
-        "DisplayIPToAdmins": {{ .Values.chat.displayPlayerIPOnJoin }},
-        "EnableChatAboveHeads": {{ .Values.chat.bubbles.enabled }},
-        {{- /* Rest API */}}
-        "RestApiEnabled": {{ .Values.rest.enabled }},
-        "RestApiPort": 7878,
-        "LogRest": {{ .Values.rest.loggingEnabled }},
-        "EnableTokenEndpointAuthentication": false,
-        "RESTMaximumRequestsPerInterval": {{ .Values.rest.maxRequestsPerInterval }},
-        "RESTRequestBucketDecreaseIntervalMinutes": {{ .Values.rest.requestBucketDecreaseIntervalMinutes }},
-        "ApplicationRestTokens": {
-          {{- include "terraria.restApplicationTokens" . | nindent 10 }}
-        }
-      }
-    }
-  {{- end }}

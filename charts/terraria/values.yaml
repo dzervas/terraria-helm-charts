@@ -49,10 +49,6 @@ server:
     # Default number of max players, for non-reserved player slots
     base: 8
 
-    # Number of reserved player slots past the default that can be joined by reserved players
-    #  tshock-only
-    reserved: 20
-
   # The maximum number of connections per IP, or no limit if null
   maxConnectionsPerIP: null
 
@@ -72,43 +68,6 @@ antiCheatProtection:
   # If additional cheat protection is enabled
   enabled: true
 
-  # If range checks based on distance between players and their block placements are enabled
-  #  tshock-only
-  rangeChecks: true
-
-# Prevents non-hardcore players from connecting
-#  tshock-only
-hardcoreOnly: false
-
-# Prevents softcore players from connecting
-#  tshock-only
-mediumcoreOnly: false
-
-# Spawn protection
-#  tshock-only
-spawnProtection:
-
-  # If tiles are protected around the spawn tile
-  enabled: true
-
-  # Tile radius around the spawn tile
-  radius: 10
-
-# Hardmode
-#  tshock-only
-hardmode:
-
-  # If hardmode can be triggered by the Wall of Flesh or the /starthardmode command
-  triggerable: true
-
-  # Allows the crimson to spread when a world is in hardmode
-  spreadCrimson: true
-
-  # Allows the corruption to spread when a world is in hardmode
-  spreadCorruption: true
-
-  # Allows the hallow to spread when a world is in hardmode
-  spreadHallow: true
 
 announcementBox:
 
@@ -135,35 +94,6 @@ world:
   # Reduces maximum liquids moving at the same time. If enabled may reduce lags but liquids may
   # take longer to settle
   slowLiquids: false
-
-  # If auto save is enabled
-  #  tshock-only, cannot be disabled for the vanilla image
-  autoSave: true
-
-  # If saving should be announced
-  #  tshock-only
-  announceSave: true
-
-  # Whether to save the world if the server crashes from an unhandled exception
-  #  tshock-only
-  saveOnCrash: true
-
-  # Whether to save the world when the last player disconnects
-  #  tshock-only
-  saveOnLastPlayerExit: true
-
-  # World backup, backups are stored next to the world file under a backup directory
-  #  tshock-only
-  backup:
-
-    # If saving caused by backing up should be announced
-    announceSave: true
-
-    # Backup interval, setting the interval to zero disables backups
-    interval: 0m
-
-    # How long backups should be kept
-    keepFor: 1h
 
   # Rollbacks to keep
   rollbacksToKeep: 2
@@ -199,101 +129,6 @@ world:
     # Volume size limit
     sizeLimit: null
 
-# Plugins
-#  tshock-only
-plugins:
-
-  # Whether the API version should be checked, disabling this allows older plugins to run
-  versionCheck: true
-
-# Chat
-#  tshock-only
-chat:
-
-  # Specifies which string starts a command. Note: Will not function properly if the string length
-  # is longer than one character.
-  commandSpecifier: "/"
-
-  # Specifies which string starts a command silently. Note: Will not function properly if the string
-  # length is longer than one character.
-  silentCommandSpecifier: "."
-
-  # Whether to announce a player's geographic location on join, based on their IP.
-  announceGeographicLocation: false
-
-  # Whether a player's IP should be displayed to users with the log permission.
-  displayPlayerIPOnJoin: false
-
-  # The color of the broadcast messages
-  broadcastColor: "#7fffd4"
-
-  # Chat format
-  #  placeholders:
-  #   - ${groupName}
-  #   - ${groupPrefix}
-  #   - ${playerName}
-  #   - ${groupSuffix}
-  #   - ${message}
-  format: "${groupPrefix}${playerName}${groupSuffix}: ${message}"
-
-  # Chat bubbles above players' heads
-  bubbles:
-
-    # If chat bubbles are enabled
-    enabled: true
-
-  # Super admin settings
-  superAdmin:
-
-    # The chat color for the super admin group. Color can be RGB as an array or HEX color value.
-    color: "#ffffff"
-
-    # The super admin prefix
-    prefix: "(Super Admin) "
-
-    # The super admin suffix
-    suffix: ""
-
-# Rest Service
-#  tshock-only
-rest:
-
-  # If the rest service is enabled, is ignored if not tshock
-  enabled: false
-
-  # If rest connections should be logged
-  loggingEnabled: false
-
-  # The maximum REST requests in the bucket before denying requests, minimum value is 5
-  maxRequestsPerInterval: 5
-
-  # How often in minutes the REST requests bucket is decreased by one, minimum value is 1 minute
-  requestBucketDecreaseIntervalMinutes: 1
-
-  # Access tokens that are persistent between restarts
-  # Ref: https://tshock.readme.io/reference/rest-api-endpoints
-  applicationTokens:
-    # - name: rest-ban-token
-    #   user: rest-banner
-    #   userGroup: rest-ban-groupo
-
-  # Service settings
-  # Ref: https://kubernetes.io/docs/tutorials/kubernetes-basics/expose/expose-intro/
-  service:
-
-    # The service type
-    type: ClusterIP
-
-    # The service port
-    port: 7878
-
-    # The port the rest api will be exposed as externally, if the service type is "NodePort", this
-    # will be the fixed port instead of a random one in the node port range
-    nodePort: null
-
-    # Load balancer IP, if service type is "LoadBalancer"
-    loadBalancerIP: null
-
 image:
 
   # The pull policy that is used for all images, unless overridden for a specific image
@@ -304,10 +139,9 @@ image:
 
   # The terraria server image
   terraria:
-    # The image type: tshock, vanilla, null to derive from image tag
     type: null
     repository: ghcr.io/dzervas/terraria
-    tag: tshock-{{ .Chart.AppVersion }}
+    tag: {{ .Chart.AppVersion }}
     # The pull policy, image.pullPolicy is used if not set
     pullPolicy: null
 

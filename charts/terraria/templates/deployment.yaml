@@ -28,9 +28,6 @@ spec:
         - name: server-config
           configMap:
             name: {{ include "terraria.fullname" . }}
-        - name: tshock-config
-          configMap:
-            name: {{ include "terraria.fullname" . }}
         - name: worlds
           {{- if .Values.world.persistentVolume.enabled }}
           persistentVolumeClaim:
@@ -49,38 +46,10 @@ spec:
             {}
             {{- end -}}
           {{- end }}
-        - name: plugins
-          emptyDir: {}
         - name: logs
           emptyDir: {}
         - name: config
           emptyDir: {}
-      initContainers:
-        {{- if .Values.extraInitContainers }}
-        {{- range $name, $spec := .Values.extraInitContainers }}
-        - name: {{ $name }}
-          {{- if kindIs "string" $spec }}
-          {{- tpl $spec $ | nindent 10 }}
-          {{- else }}
-          {{- toYaml $spec | nindent 10 }}
-          {{- end }}
-        {{- end }}
-        {{- end }}
-        {{- if include "terraria.tshock" . }}
-        - name: copy-tshock-config
-          {{- include "terraria.toolsImage" . | nindent 10 }}
-          command:
-            - sh
-            - -c
-            - |
-              cp /tshock-config/config.json /config
-              echo "Copied tshock config file"
-          volumeMounts:
-            - name: config
-              mountPath: /config
-            - name: tshock-config
-              mountPath: /tshock-config
-        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: {{ tpl .Values.image.terraria.repository . }}:{{ tpl .Values.image.terraria.tag . }}
@@ -97,24 +66,12 @@ spec:
             {{- if not .Values.announcementBox.enabled }}
             - -disableannouncementbox
             {{- end }}
-            {{- if include "terraria.tshock" . }}
-            - -killinactivesocket
-            - -asyncmono
-            {{- with .Values.server.maxConnectionsPerIP }}
-            - -connperip {{ . }}
-            {{- end }}
-            {{- if .Values.server.forceUpdates }}
-            - -forceupdate
-            {{- end }}
-            {{- end }}
           volumeMounts:
             - name: server-config
               mountPath: /terraria-server/serverconfig.txt
               subPath: serverconfig.txt
             - name: worlds
               mountPath: /data/worlds
-            - name: plugins
-              mountPath: /data/plugins
             - name: logs
               mountPath: /data/logs
             - name: config
@@ -122,10 +79,6 @@ spec:
           ports:
             - containerPort: 7777
               name: server
-            {{- if and (include "terraria.tshock" .) .Values.rest.enabled }}
-            - containerPort: 7878
-              name: rest
-            {{- end }}
           startupProbe:
             {{- include "terraria.livenessCheck" . | nindent 12 }}
             {{- include "terraria.probeValues" .Values.startupProbe | nindent 12 }}
