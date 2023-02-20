@@ -10,6 +10,9 @@ metadata:
 spec:
   accessModes:
     {{- toYaml .Values.world.persistentVolume.accessModes | nindent 4 }}
+  {{- if .Values.world.persistentVolume.storageClass }}
+  storageClassName: {{ .Values.world.persistentVolume.storageClass }}
+  {{- end }}
   {{- if .Values.world.persistentVolume.volumeBindingMode }}
   volumeBindingModeName: {{ .Values.world.persistentVolume.volumeBindingMode }}
   {{- end }}

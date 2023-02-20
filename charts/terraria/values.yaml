@@ -190,6 +190,10 @@ world:
     # If undefined, the default mode will be used.
     volumeBindingMode: null
 
+    # The storage class to use
+    # If undefined, the default storage class will be used.
+    storageClass: null
+
   # Worlds empty dir
   emptyDir:
     # Volume size limit

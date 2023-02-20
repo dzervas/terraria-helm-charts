@@ -8,7 +8,7 @@ on:
       - master
     paths:
       - images/vanilla/**
-      - charts/terraria/Chart.yaml
+      - charts/terraria/**
 
 permissions:
   contents: write
