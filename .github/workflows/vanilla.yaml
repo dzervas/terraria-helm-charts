@@ -1,32 +1,43 @@
 ---
 
-name: Build & Release Vanilla Image
+name: Build & Release Vanilla
 
 on:
   push:
     branches:
       - master
-    paths:
-      - images/vanilla/**
-      - charts/terraria/**
 
 permissions:
   contents: write
   packages: write
 
 jobs:
+  paths:
+    runs-on: ubuntu-latest
+    outputs:
+      vanilla-image: ${{ steps.changes.outputs.vanilla-image }}
+      vanilla-chart: ${{ steps.changes.outputs.vanilla-chart }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            vanilla-image:
+              - 'images/vanilla/**'
+            vanilla-chart:
+              - 'charts/vanilla/**'
   image:
     runs-on: ubuntu-latest
+    needs: paths
+    if: needs.paths.outputs.vanilla-image == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # TODO: Automatically build the latest version
-      # - name: Get latest server version
-        # run: echo "LATEST=$(curl -sL https://terraria.wiki.gg/wiki/Server | rg -o 'https://terraria.org/api/download/pc-dedicated-server/terraria-server-\d+.zip' | rg -o '\d+' | sort | tail -n 1)" >>$GITHUB_ENV
-
       - name: Get current version
-        run: echo "VERSION=$(grep appVersion charts/terraria/Chart.yaml | grep -o '[\d.-]+')" >>$GITHUB_ENV
+        run: echo "VERSION=$(grep 'ARG VERSION=' images/vanilla/Dockerfile | grep -o '[0-9.-]\+')" >>$GITHUB_ENV
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -52,9 +63,13 @@ jobs:
             ghcr.io/dzervas/terraria:vanilla-${{ env.VERSION }}
   chart:
     runs-on: ubuntu-latest
+    needs: paths
+    if: needs.paths.outputs.vanilla-chart == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Install Helm
         if: steps.current_version.outputs.digest != steps.new_version.outputs.digest
@@ -71,4 +86,4 @@ jobs:
           charts_dir: charts
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          CR_RELEASE_NAME_TEMPLATE: "{{ .Version }}"
+          CR_RELEASE_NAME_TEMPLATE: "Terraria Server v{{ .Version }} chart v{{ .AppVersion }}"
