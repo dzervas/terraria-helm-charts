@@ -91,10 +91,10 @@ jobs:
       #   with:
       #     tag: v${{ env.APPVERSION }}-${{ env.VERSION }}
 
-      - name: Push new tag
-        run: |
-          git tag -a "v${{ env.APPVERSION }}-${{ env.VERSION }}" -m "Bump Terraria Server v{{ .AppVersion }} chart v{{ .Version }}"
-          git push origin "v${{ env.APPVERSION }}-${{ env.VERSION }}"
+      # - name: Push new tag
+      #   run: |
+      #     git tag -a "v${{ env.APPVERSION }}-${{ env.VERSION }}" -m "Bump Terraria Server v{{ .AppVersion }} chart v{{ .Version }}"
+      #     git push origin "v${{ env.APPVERSION }}-${{ env.VERSION }}"
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.5.0
