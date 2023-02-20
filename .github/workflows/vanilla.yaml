@@ -81,20 +81,22 @@ jobs:
           echo "VERSION=$(grep 'version: ' charts/vanilla/Chart.yaml | grep -o '[0-9.-]\+')" >> $GITHUB_ENV
           echo "APPVERSION=$(grep 'appVersion: ' charts/vanilla/Chart.yaml | grep -o '[0-9.-]\+')" >> $GITHUB_ENV
 
+      - uses: actions-ecosystem/action-get-latest-tag@v1
+        id: get-latest-tag
+
+      - uses: actions-ecosystem/action-bump-semver@v1
+        id: bump-semver
+        with:
+          current_version: ${{ steps.get-latest-tag.outputs.tag }}
+          level: minor
+
+      - run: >-
+          sed -Ei 's/(^version: ?)[\d.-]+/\1${{ steps.bump-semver.outputs.new_version }}/' charts/vanilla/Chart.yaml
+
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-
-      # This is buggy
-      # - uses: actions-ecosystem/action-push-tag@v1
-      #   with:
-      #     tag: v${{ env.APPVERSION }}-${{ env.VERSION }}
-
-      # - name: Push new tag
-      #   run: |
-      #     git tag -a "v${{ env.APPVERSION }}-${{ env.VERSION }}" -m "Bump Terraria Server v{{ .AppVersion }} chart v{{ .Version }}"
-      #     git push origin "v${{ env.APPVERSION }}-${{ env.VERSION }}"
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.5.0
@@ -103,3 +105,8 @@ jobs:
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           CR_RELEASE_NAME_TEMPLATE: "Terraria Server v{{ .AppVersion }} chart v{{ .Version }}"
+
+      # - name: Push new tag
+      #   run: |
+      #     git tag -a "v${{ env.APPVERSION }}-${{ env.VERSION }}" -m "Bump Terraria Server v{{ .AppVersion }} chart v{{ .Version }}"
+      #     git push origin "v${{ env.APPVERSION }}-${{ env.VERSION }}"
