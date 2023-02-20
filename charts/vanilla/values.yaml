@@ -55,10 +55,6 @@ server:
   # Password of the server
   password: null
 
-  # Forces the server to keep updating, and not hibernating when no players are on. This results
-  # in time passing, grass growing, etc.
-  forceUpdates: false
-
   # The restart policy applied to the server pod
   restartPolicy: Always
 
