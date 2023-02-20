@@ -86,9 +86,15 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      - uses: actions-ecosystem/action-push-tag@v1
-        with:
-          tag: v${{ env.APPVERSION }}-${{ env.VERSION }}
+      # This is buggy
+      # - uses: actions-ecosystem/action-push-tag@v1
+      #   with:
+      #     tag: v${{ env.APPVERSION }}-${{ env.VERSION }}
+
+      - name: Push new tag
+        run: |
+          git tag -a "v${{ env.APPVERSION }}-${{ env.VERSION }}"
+          git push origin "v${{ env.APPVERSION }}-${{ env.VERSION }}"
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.5.0
