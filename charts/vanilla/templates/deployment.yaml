@@ -79,15 +79,16 @@ spec:
           ports:
             - containerPort: 7777
               name: server
-          startupProbe:
-            {{- include "terraria.livenessCheck" . | nindent 12 }}
-            {{- include "terraria.probeValues" .Values.startupProbe | nindent 12 }}
-          livenessProbe:
-            {{- include "terraria.livenessCheck" . | nindent 12 }}
-            {{- include "terraria.probeValues" .Values.livenessProbe | nindent 12 }}
-          readinessProbe:
-            {{- include "terraria.livenessCheck" . | nindent 12 }}
-            {{- include "terraria.probeValues" .Values.readinessProbe | nindent 12 }}
+          # TODO: Fix the probes
+          # startupProbe:
+          #   {{- include "terraria.livenessCheck" . | nindent 12 }}
+          #   {{- include "terraria.probeValues" .Values.startupProbe | nindent 12 }}
+          # livenessProbe:
+          #   {{- include "terraria.livenessCheck" . | nindent 12 }}
+          #   {{- include "terraria.probeValues" .Values.livenessProbe | nindent 12 }}
+          # readinessProbe:
+          #   {{- include "terraria.livenessCheck" . | nindent 12 }}
+          #   {{- include "terraria.probeValues" .Values.readinessProbe | nindent 12 }}
           {{- with .Values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
