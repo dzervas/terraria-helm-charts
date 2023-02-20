@@ -27,7 +27,7 @@ jobs:
             vanilla-image:
               - 'images/vanilla/**'
             vanilla-chart:
-              - 'charts/vanilla/**'
+              - 'charts/vanilla/Chart.yaml'
   image:
     runs-on: ubuntu-latest
     needs: paths
