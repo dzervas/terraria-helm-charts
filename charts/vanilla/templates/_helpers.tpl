@@ -87,30 +87,12 @@ should respond with "Multiplayer.4" which is a version mismatch disconnect messa
 The save on last player exit feature interferes with the packet, which causes a save for every
 packet. So just use a tcp probe if it is enabled.
 */ -}}
-{{- if and (include "terraria.tshock" .) .Values.world.saveOnLastPlayerExit -}}
-tcpSocket:
-  port: 7777
-{{- else -}}
 exec:
   command:
     - bash
     - -c
     - "{{ include "terraria.livenessPacket" . }} | (exec 3<>/dev/tcp/localhost/7777; cat >&3; cat <&3; exec 3<&-) | grep 'Multiplayer.4'"
 {{- end -}}
-{{- end -}}
-
-{{/*
-Returns if the deployed image is tshock.
-*/}}
-{{- define "terraria.tshock" -}}
-  {{- if .Values.image.terraria.type }}
-    {{- if eq .Values.image.terraria.type "tshock" }}
-      true
-    {{- end }}
-  {{- else if contains "tshock" (tpl .Values.image.terraria.tag .) }}
-    true
-  {{- end }}
-{{- end }}
 
 {{/*
 Define the namespace template if set with forceNamespace or .Release.Namespace is set.
