@@ -43,7 +43,7 @@ data:
     maxplayers={{ .Values.server.maxPlayers.base }}
     worldrollbackstokeep={{ .Values.world.rollbacksToKeep }}
     language={{ .Values.server.language }}
-    {{- if .Values.password }}
+    {{- if .Values.server.password }}
     password={{ .Values.server.password }}
     {{- end }}
     {{- if .Values.world.seed }}

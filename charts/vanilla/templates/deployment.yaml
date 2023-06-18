@@ -78,6 +78,7 @@ spec:
               mountPath: /data/config
           ports:
             - containerPort: 7777
+              protocol: TCP
               name: server
           # TODO: Fix the probes
           {{- with .Values.resources }}
